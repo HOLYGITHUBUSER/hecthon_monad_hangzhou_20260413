@@ -226,26 +226,136 @@ npm run demo         # 一键跑全部
 
 ```
 AgentVault/
+├── .env.example                            # 环境变量模板（私钥/RPC/Telegram/x402）
+├── .gitignore                              # 敏感文件排除规则
+├── .mcp.json                               # MCP 服务器配置
+├── README.md                               # 你正在看的这份文档
+├── deployment.json                         # 合约部署地址 + ABI
+├── package.json                            # Node 依赖（ethers/dotenv/telegraf）
+├── tsconfig.json                           # TypeScript 配置
+│
 ├── contracts-合约/
-│   └── AgentVault.sol                    # 智能合约（466行，中文注释）
+│   └── AgentVault.sol                      # 智能合约（466行，中文注释）
+│
+├── artifacts-编译产物/
+│   ├── contracts-合约_AgentVault_sol_AgentVault.abi   # 合约 ABI
+│   └── contracts-合约_AgentVault_sol_AgentVault.bin   # 合约字节码
+│
+├── scripts-脚本/
+│   ├── deploy-ethers-部署合约.ts            # 部署合约到 Monad
+│   ├── setup-vault-初始化金库.ts            # 初始化金库 + 授权 Agent
+│   ├── setup-vault-diff-差异化授权.ts       # 差异化授权（不同 Agent 不同配置）
+│   ├── authorize-wallet-授权钱包.ts          # 授权新 Agent 钱包
+│   ├── withdraw-vault-提取资金.ts           # Owner 从 Vault 提取资金
+│   └── get-address-获取地址.ts              # 从私钥推导钱包地址
+│
 ├── sdk-开发包/
-│   └── agent-vault-standalone-独立SDK.ts  # SDK（ethers.js v6，Agent 原生增强）
+│   └── agent-vault-standalone-独立SDK.ts    # 独立 SDK（ethers.js v6，Agent 原生增强）
+│
 ├── mcp-server-MCP服务器/
-│   └── mcp-server.ts                      # MCP Server（11 个工具）
-├── bot-机器人/
-│   └── telegram-approval-审批通知.ts       # Telegram 审批 Bot
+│   └── mcp-server.ts                       # MCP Server（11 个工具，stdio 通信）
+│
 ├── x402-机器支付/
-│   ├── x402-client-客户端.ts               # x402 支付客户端中间件
-│   ├── x402-server-服务端.ts               # x402 付费 API 服务端
+│   ├── x402-server-服务端.ts               # x402 付费 API 服务端（HTTP 402）
+│   ├── x402-client-客户端.ts               # x402 客户端中间件（自动支付重试）
 │   └── demo-x402-演示.ts                   # x402 端到端演示
-├── frontend-前端/                          # React Dashboard（Vite + TailwindCSS）
-├── demo-演示/                              # 3 个场景 + 一键全跑
-├── scripts-脚本/                           # 部署/初始化/授权/提款
-├── test-测试/                              # 完整功能测试 + 账本测试
-├── artifacts-编译产物/                     # ABI + 字节码
-├── deployment.json                         # 部署信息 + ABI
-└── .env.example                            # 环境变量模板
+│
+├── bot-机器人/
+│   └── telegram-approval-审批通知.ts        # Telegram 审批 Bot（待审批→推送→批准/拒绝）
+│
+├── demo-演示/
+│   ├── https-proxy-代理.cjs                # HTTPS + WebSocket 代理（局域网安全访问）
+│   ├── run-all-scenarios-运行全部场景.ts     # 一键运行全部 3 个场景
+│   ├── scenario1-success-场景1成功支付.ts    # 场景1：Agent 小额支付 → 自动通过
+│   ├── scenario2-rejected-场景2拒绝支付.ts   # 场景2：Agent 超额支付 → 被合约拒绝
+│   └── scenario3-audit-场景3审计日志.ts      # 场景3：查看审计日志 + policyHit
+│
+├── test-测试/
+│   ├── test-full-完整功能测试.ts            # 完整功能测试（3 个 Agent）
+│   ├── test-ledger-账本测试.ts             # 账本记录测试
+│   ├── test-openclaw-scenarios-测试OpenClaw场景.ts  # OpenClaw MCP 场景测试
+│   └── view-ledger-查看账本.ts             # 查看链上账本
+│
+├── docs-文档/
+│   ├── architecture.md                     # 架构设计文档
+│   ├── contract.md                         # 合约功能文档
+│   ├── sdk.md                              # SDK 使用文档
+│   ├── deployment.md                       # 部署文档
+│   ├── demo.md                             # 演示说明
+│   ├── demo-guide-演示指南.md              # 演示操作指南
+│   └── status.md                           # 项目状态
+│
+├── authorize-agent-授权agent.ts            # 授权 Agent 脚本
+├── check-agent-检查agent.ts                # 检查 Agent 状态
+├── simulate-high-frequency-tx.ts           # 高频交易模拟（压力测试）
+│
+└── frontend-前端/                          # ⭐ React Dashboard
+    ├── index.html                          # 入口 HTML
+    ├── package.json                        # 前端依赖（React/Vite/TailwindCSS/ethers）
+    ├── vite.config.ts                      # Vite 配置
+    ├── eslint.config.js                    # ESLint 配置
+    ├── tsconfig.json / tsconfig.app.json / tsconfig.node.json
+    ├── public/
+    │   ├── favicon.svg                     # 站点图标
+    │   └── icons.svg                       # SVG 图标集
+    └── src/
+        ├── main.tsx                        # React 入口
+        ├── App.tsx                         # ⭐ 主组件（1300+ 行全功能 Dashboard）
+        ├── contract.ts                     # 合约连接配置（Vault 地址 + ABI + Provider）
+        ├── index.css                       # TailwindCSS 样式
+        └── assets/
+            ├── hero.png                    # 首页 Hero 图
+            ├── react.svg                   # React Logo
+            └── vite.svg                    # Vite Logo
 ```
+
+---
+
+## 🖥️ 前端 Dashboard 突出点
+
+> 单文件 `App.tsx`（1300+ 行）实现全功能管理面板，零外部 UI 库，纯 TailwindCSS 手写。
+
+### 实时状态面板
+- **Vault 余额** — 合约实时余额 + Owner/Agent 钱包余额
+- **合约状态** — 紧急暂停开关实时显示
+- **Agent 状态卡片** — Session Key 标签 + 单笔/日限额 + 过期倒计时 + 剩余额度
+
+### 资金操作
+- **存款到 Vault** — MetaMask 签名，MON → 合约
+- **提取到 Owner** — 合约 → Owner 钱包
+- **给 Agent 转 gas 费** — Owner 钱包 → Agent 钱包（地址可输入）
+
+### Agent 授权/撤销
+- **授权新 Agent** — 5 个参数可配：钱包地址/日限额/单笔限额/过期时间/审批/白名单
+- **预设模板** — 一键切换"需审批"/"白名单"模式
+- **撤销 Agent** — 一键移除，Session Key 立即失效
+- **更新过期时间** — 延长/缩短 Session Key 有效期
+
+### 白名单管理
+- **添加/移除白名单** — 指定 Agent + 收款人地址
+- 开启后 Agent 只能向白名单内地址支付
+
+### 审批队列
+- **待审批支付列表** — 显示 Agent/金额/原因/任务ID
+- **批准/拒绝** — Owner 一键操作
+
+### 链上账本
+- **分页浏览** — 全部操作记录（存款/支付/提款/审批）
+- **操作者 + 金额 + 对手方 + 原因 + 时间戳**
+
+### 可折叠知识面板（5 个）
+| 面板 | 内容 |
+|------|------|
+| 📖 **术语表** | Owner / Session Key / Vault / 白名单 / 审批 / policyHit 等核心概念解释 |
+| 🏗️ **架构说明** | 四层架构图（Owner → Vault → Agent → x402）+ MCP 调用流程 + 11 个工具列表 |
+| ✅ **5 项要求对照** | 赛题要求 vs AgentVault 实现，逐条对应 |
+| ⭐ **加分特性** | x402 / Telegram / Dashboard / 差异化配置 / policyHit / HTTPS 代理 |
+| 🎬 **演示指南** | 按 OpenClaw 聊天框格式，直接复制的命令示例 |
+
+### 安全模型可视化
+- **资金流向图** — Owner → Vault → Agent → 收款人，每步标注规则
+- **Session Key 泄露场景** — 泄露 → 限额内损失 → revokeAgent 止血 → 剩余安全
+- **10 道防线** — 逐层检查流程可视化
 
 ---
 
@@ -255,12 +365,13 @@ AgentVault/
 |------|------|
 | 智能合约 | Solidity 0.8.28 |
 | SDK | ethers.js v6 + TypeScript |
-| MCP Server | @modelcontextprotocol/sdk |
-| 前端 | React + Vite + TailwindCSS |
+| MCP Server | @modelcontextprotocol/sdk（stdio 通信） |
+| 前端 | React 19 + Vite 6 + TailwindCSS 4（零 UI 库，纯手写） |
 | 链 | Monad Testnet (chainId: 10143) |
 | AI Agent | OpenClaw + MiniMax (1openclaw 中转) |
-| 通知 | Telegram Bot API |
+| 通知 | Telegram Bot API (telegraf) |
 | 机器支付 | x402 协议 (HTTP 402) |
+| 代理 | HTTPS + WebSocket (自签名证书) |
 
 ---
 
