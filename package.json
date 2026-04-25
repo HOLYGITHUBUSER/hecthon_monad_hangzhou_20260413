@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "install:all": "npm install && npm install --prefix frontend-前端",
+    "build:frontend": "npm run build --prefix frontend-前端",
+    "build:all": "npm run compile && npm run build:frontend",
     "compile": "npx solcjs --abi --bin contracts-合约/AgentVault.sol --output-dir artifacts-编译产物",
     "deploy": "npx tsx scripts-脚本/deploy-ethers-部署合约.ts",
     "demo": "npx tsx demo-演示/run-all-scenarios-运行全部场景.ts",

@@ -153,18 +153,18 @@ AgentVault 不只是合约，它让 AI Agent 真正能用：
 
 ```bash
 # 1. 克隆项目
-git clone https://github.com/your-repo/AgentVault.git
-cd AgentVault
+git clone https://github.com/HOLYGITHUBUSER/hecthon_monad_hangzhou_20260413.git
+cd hecthon_monad_hangzhou_20260413
 
-# 2. 安装依赖
-npm install
+# 2. 安装根项目和前端依赖
+npm run install:all
 
 # 3. 配置环境变量
 cp .env.example .env
 # 编辑 .env 填入你的私钥
 
-# 4. 编译合约
-npm run compile
+# 4. 编译合约和前端
+npm run build:all
 
 # 5. 部署到 Monad 测试网
 npm run deploy
@@ -172,6 +172,8 @@ npm run deploy
 # 6. 一键运行全部 Demo
 npm run demo
 ```
+
+更完整的下载后运行、部署和环境变量说明见 [`docs-文档/download-run-deploy.md`](docs-文档/download-run-deploy.md)。
 
 ### 各模块启动
 
